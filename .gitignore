@@ -1,0 +1,8 @@
+*.pro.user
+build-*
+*.doxytag
+*.autosave
+.directory
+*.md~
+.gitignore~
+doc/html/
