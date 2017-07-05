@@ -52,3 +52,7 @@ The second example is a simple communication with the weather API.
 
 
 This project is fully docummented - please check doxygen docs or see the comments directly in the source file(s).
+
+# License # {#license}
+
+This project is licensed under the MIT License - see the LICENSE-MiloCodeDB.txt file for details
