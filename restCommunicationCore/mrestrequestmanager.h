@@ -30,6 +30,7 @@ SOFTWARE.
 
 #include "mrestrequestqueue.h"
 #include "mrestrequest.h"
+#include "mrestrequestptr.h"
 
 class QNetworkAccessManager;
 
@@ -38,7 +39,7 @@ class MRestRequestManager : public QObject
     Q_OBJECT
 public:
     MRestRequestManager(QObject *parent = nullptr);
-    void send(RestRequestPtr request);
+    void send(MRestRequestPtr request);
     void ignoreSslErrors();
 signals:
     void sslErrorsChanged(const QStringList &errors);

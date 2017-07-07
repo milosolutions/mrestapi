@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "config.h"
+#include "mconfig.h"
 
 class MRestRequestConfig : public MConfig
 {

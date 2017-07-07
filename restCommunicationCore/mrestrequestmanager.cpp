@@ -64,13 +64,13 @@ MRestRequestManager::MRestRequestManager(QObject *parent) :
  * MRestRequestManager takes ownership of the pointer (it will keep it alive until
  * the request result is received).
  */
-void MRestRequestManager::send(RestRequestPtr request)
+void MRestRequestManager::send(MRestRequestPtr request)
 {
     if (mActiveRequests.size() < MaxActiveRequestsCount) {
         mActiveRequests.append(request);
 
         request->sendWith(networkManager);
-        QObject::connect(request.data(), &RestRequest::finished,
+        QObject::connect(request.data(), &MRestRequest::finished,
                 this, &MRestRequestManager::onRequestFinished);
     } else {
         pendingRequests.enqueue(request);
@@ -106,7 +106,7 @@ void MRestRequestManager::removeActiveRequest(QObject *sender)
         return;
     }
 
-    foreach (const RestRequestPtr &request, mActiveRequests) {
+    foreach (const MRestRequestPtr &request, mActiveRequests) {
         if (request.data() == sender) {
             mActiveRequests.removeOne(request);
             return;
