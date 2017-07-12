@@ -1,4 +1,6 @@
-Milo Code DB main ([online](https://qtdocs.milosolutions.com/milo-code-db/main/))
+\anchor milodatabaserestapicommunication 
+ 
+Milo Code DB main ([online](https://qtdocs.milosolutions.com/milo-code-db/main/) | [offline](\ref milodatabasemain)) 
 
 RestAPICommunication is a project that shows sample code to communicate via REST API.
 
