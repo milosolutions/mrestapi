@@ -1,6 +1,4 @@
-\anchor milodatabaserestapicommunication
-
-Milo Code DB main ([online](https://qtdocs.milosolutions.com/milo-code-db/main/) | [offline](\ref milodatabasemain))
+Milo Code DB main ([online](https://qtdocs.milosolutions.com/milo-code-db/main/))
 
 RestAPICommunication is a project that shows sample code to communicate via REST API.
 
@@ -22,12 +20,11 @@ It was created for the MiloCodeDatabase project.
 
 # How use this in my project? # {#howtouse}
 
-    1. copy the restCommunicationCore directory to the own project  
-    2. include .pri file in project .pro file - include(../restapicommunication.pri)  
-    3. set configuration for API (base url) - use RestRequestConfig or create own class based on it (if needed)
-    4. create RestRequestManager
-    5. create classes for each endpoint (inherit from RestRequest)
-    6. look to the example ;)  
+    1. include .pri file in project .pro file - include(mrestapi/mrestapi.pri)  
+    2. set configuration for API (base url) - use RestRequestConfig or create own class based on it (if needed)
+    3. create RestRequestManager
+    4. create classes for each endpoint (inherit from RestRequest)
+    5. look to the example ;)  
 
 
 # How create request (create classes for endpoints)? # {#howtocreate}  
