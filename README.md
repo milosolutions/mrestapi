@@ -2,7 +2,7 @@
  
 Milo Code DB main ([online](https://qtdocs.milosolutions.com/milo-code-db/main/) | [offline](\ref milodatabasemain)) 
 
-RestAPICommunication is a project that shows sample code to communicate via REST API.
+MRestApi is a project that shows sample code to communicate via REST API.
 
 It was created for the MiloCodeDatabase project.
 
