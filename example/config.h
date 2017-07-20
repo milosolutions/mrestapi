@@ -24,11 +24,29 @@ SOFTWARE.
 
 #pragma once
 
-#include "mconfig.h"
+#include <QHash>
+#include <QByteArray>
+#include <QMetaType>
 
-class MRestRequestConfig : public MConfig
+#define CONFIG_VALUE(name, type) \
+        mValues.insert(#name, ValuePtr(type, static_cast<void*>(&name)));
+
+class Config
 {
 public:
-    MRestRequestConfig();
-    QByteArray baseUrl;
+    Config(const QByteArray& groupName);
+    void load();
+    void save();
+protected:
+    class ValuePtr {
+    public:
+        ValuePtr() {}
+        ValuePtr(int t, void* v) : type(t), ptr(v) {}
+        int type = QMetaType::UnknownType;
+        void* ptr = nullptr;
+    };
+    QHash<QByteArray,ValuePtr> mValues;
+private:
+    const QByteArray mGroupName;
+    static void copyValue(void *dst, int type, const QVariant& value);
 };

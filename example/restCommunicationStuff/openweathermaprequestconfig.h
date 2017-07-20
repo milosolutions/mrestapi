@@ -25,13 +25,16 @@ SOFTWARE.
 #ifndef OPENWEATHERMAPREQUESTCONFIG_H
 #define OPENWEATHERMAPREQUESTCONFIG_H
 
-#include "restrequestconfig.h"
+#include "config.h"
+#include <QByteArray>
 
-class OpenWeatherMapRequestConfig : public RestRequestConfig
+class OpenWeatherMapRequestConfig : public Config
 {
 public:
     OpenWeatherMapRequestConfig();
     QString mAppID;
+
+    QByteArray baseUrl;
 };
 
 #endif // OPENWEATHERMAPREQUESTCONFIG_H

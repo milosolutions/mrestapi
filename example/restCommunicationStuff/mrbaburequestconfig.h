@@ -25,12 +25,15 @@ SOFTWARE.
 #ifndef MRBABUREQUESTCONFIG_H
 #define MRBABUREQUESTCONFIG_H
 
-#include "restrequestconfig.h"
+#include <QByteArray>
+#include "config.h"
 
-class MrBabuRequestConfig : public RestRequestConfig
+class MrBabuRequestConfig : public Config
 {
 public:
     MrBabuRequestConfig();
+
+    QByteArray baseUrl;
 };
 
 #endif // MRBABUREQUESTCONFIG_H

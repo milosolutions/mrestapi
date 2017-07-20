@@ -41,7 +41,7 @@ Q_LOGGING_CATEGORY(mrbrequest, "request")
  */
 
 RestAPIClient::RestAPIClient(QObject *parent)
-    : RestRequestManager(parent)
+    : MRestRequestManager(parent)
 {
 }
 

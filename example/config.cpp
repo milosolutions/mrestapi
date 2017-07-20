@@ -22,28 +22,24 @@ SOFTWARE.
 *******************************************************************************/
 
 
-#include "MConfig.h"
+#include "config.h"
 #include <QSettings>
 
 /*!
- * \defgroup MConfig Configuration and settings
+ * \defgroup Config Configuration and settings
  * @{
  */
 
 /*!
- * \class MConfig
+ * \class Config
  * \brief Configuration object base
  *
- * Class provides simplified use for storing
- * configurable values. Usage:
- * 1. Subclass MConfig
- * 2. Define group name (mGroupName)
- * 3. For each member of subclassed object provide info to mValues hash using ValuePtr object.
- * 4. Make sure yor application does have QCoreApplication::organizationName and
- * QCoreApplication::applicationName set.
+ * This is simple version of MConfig.
+ * For full more functionality include MConfig from MiloDB.
+ *
  */
 
-MConfig::MConfig(const QByteArray& groupName) :
+Config::Config(const QByteArray& groupName) :
     mGroupName(groupName)
 {
     //Nothing
@@ -52,7 +48,7 @@ MConfig::MConfig(const QByteArray& groupName) :
 /*!
  * \brief load all values using QSettings
  */
-void MConfig::load()
+void Config::load()
 {
     QSettings settings;
     settings.beginGroup(mGroupName);
@@ -66,7 +62,7 @@ void MConfig::load()
 /*!
  * \brief save all values using QSettings
  */
-void MConfig::save()
+void Config::save()
 {
     QSettings settings;
     settings.beginGroup(mGroupName);
@@ -90,7 +86,7 @@ void MConfig::save()
     *ptr = value.value<type>();\
 } break;
 
-void MConfig::copyValue(void *dst, int type, const QVariant& value)
+void Config::copyValue(void *dst, int type, const QVariant& value)
 {
     if (value.isNull()) {
         return;

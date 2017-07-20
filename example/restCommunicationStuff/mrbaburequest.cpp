@@ -44,7 +44,7 @@ SOFTWARE.
  * Adds \a method to the URL of Web API server.
  */
 MrBabuRequest::MrBabuRequest(const QString &method)
-    : RestRequest()
+    : MRestRequest()
 {
     setMethod(method);
     setPriority(Priority::Normal);

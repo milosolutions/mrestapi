@@ -3,7 +3,7 @@
 #
 ## (c) Milo Solutions, 2016
 
-include(../restapicommunication.pri)
+include(../mrestapi.pri)
 
 QT += core network
 
@@ -41,7 +41,8 @@ HEADERS += \
     restCommunicationStuff/mrbaburequestconfig.h \
     restCommunicationStuff/openweathermaprequestconfig.h \
     restCommunicationStuff/openweathermaprequests/weatherbycitynamerequest.h \
-    openWeatherMap/weather.h
+    openWeatherMap/weather.h \
+	config.h
 
 
 SOURCES += main.cpp \
@@ -58,7 +59,8 @@ SOURCES += main.cpp \
     restCommunicationStuff/mrbaburequestconfig.cpp \
     restCommunicationStuff/openweathermaprequestconfig.cpp \
     restCommunicationStuff/openweathermaprequests/weatherbycitynamerequest.cpp \
-    openWeatherMap/weather.cpp
+    openWeatherMap/weather.cpp \
+	config.cpp
 
 
 ## Put all build files into build directory

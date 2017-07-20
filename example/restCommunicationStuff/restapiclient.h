@@ -25,11 +25,11 @@ SOFTWARE.
 #ifndef RESTAPICLIENT_H
 #define RESTAPICLIENT_H
 
-#include "restrequestmanager.h"
+#include "mrestrequestmanager.h"
 
 #include <QObject>
 
-class RestAPIClient : public RestRequestManager
+class RestAPIClient : public MRestRequestManager
 {
     Q_OBJECT
 

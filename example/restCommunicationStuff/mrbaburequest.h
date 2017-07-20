@@ -25,13 +25,13 @@ SOFTWARE.
 #ifndef MRBABUREQUEST_H
 #define MRBABUREQUEST_H
 
-#include "restrequest.h"
+#include "mrestrequest.h"
 
 #include <QUrl>
 #include <QString>
 #include <QObject>
 
-class MrBabuRequest : public RestRequest
+class MrBabuRequest : public MRestRequest
 {
     Q_OBJECT
 

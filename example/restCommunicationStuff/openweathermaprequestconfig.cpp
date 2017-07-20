@@ -37,6 +37,7 @@ SOFTWARE.
  */
 
 OpenWeatherMapRequestConfig::OpenWeatherMapRequestConfig()
+  : Config("RequestConfig")
 {
 #ifdef USE_PRODUCTION_SERVER
     baseUrl = "TODO";

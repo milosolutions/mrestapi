@@ -25,11 +25,11 @@ SOFTWARE.
 #ifndef OPENWEATHERMAPREQUEST_H
 #define OPENWEATHERMAPREQUEST_H
 
-#include "restrequest.h"
+#include "mrestrequest.h"
 
 #include <QObject>
 
-class OpenWeatherMapRequest : public RestRequest
+class OpenWeatherMapRequest : public MRestRequest
 {
     Q_OBJECT
 

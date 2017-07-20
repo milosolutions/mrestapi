@@ -45,7 +45,7 @@ SOFTWARE.
  */
 
 OpenWeatherMapRequest::OpenWeatherMapRequest(const QString &method)
-    : RestRequest(method)
+    : MRestRequest(method)
 {
     setMethod(method);
     setPriority(Priority::Normal);
