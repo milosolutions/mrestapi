@@ -4,8 +4,12 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 
 OTHER_FILES += $$PWD/README.md $$PWD/AUTHORS.md $$PWD/mrestapi.doxyfile
 
+# Checking if MConfig was included to project
+!contains(DEFINES, MCONFIG_LIB) {
+  error(MConfig not included!!)
+}
+
 HEADERS += \
-    $$PWD/restCommunicationCore/mconfig.h \
     $$PWD/restCommunicationCore/mrestrequest.h \
     $$PWD/restCommunicationCore/mrestrequestqueue.h \
     $$PWD/restCommunicationCore/mrestrequestmanager.h \
@@ -13,7 +17,6 @@ HEADERS += \
     $$PWD/restCommunicationCore/mrestrequestconfig.h
 
 SOURCES += \
-    $$PWD/restCommunicationCore/mconfig.cpp \
     $$PWD/restCommunicationCore/mrestrequest.cpp \
     $$PWD/restCommunicationCore/mrestrequestqueue.cpp \
     $$PWD/restCommunicationCore/mrestrequestmanager.cpp \
