@@ -226,7 +226,7 @@ void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
         reply->deleteLater();
         mRequestTimer->stop();
         mLastError = reply->errorString();
-        qCCritical(crequest, mLastError.toLatin1());
+        qCCritical(crequest) << mLastError;
         emit replyError(mLastError);
     }
 }
