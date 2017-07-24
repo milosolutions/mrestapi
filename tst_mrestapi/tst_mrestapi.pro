@@ -7,4 +7,12 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += \ 
-    tst_restrequest.cpp
+    tst_restrequest.cpp \
+    restapiclient.cpp \
+    weatherbycitynamerequest.cpp
+
+HEADERS += \
+    restapiclient.h \
+    weatherbycitynamerequest.h
+
+include(../mrestapi.pri)

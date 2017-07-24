@@ -24,32 +24,22 @@ SOFTWARE.
 #include <QtTest>
 #include <QCoreApplication>
 
-// add necessary includes here
+#include "restapiclient.h"
+#include "weatherbycitynamerequest.h"
 
 class TestRestRequest : public QObject
 {
     Q_OBJECT
 
-public:
-    TestRestRequest();
-    ~TestRestRequest();
-
 private slots:
     void initTestCase();
     void cleanupTestCase();
-    void test_case1();
+    void testRequest();
+    void testBadRequest();
 
+private:
+    RestAPIClient client;
 };
-
-TestRestRequest::TestRestRequest()
-{
-
-}
-
-TestRestRequest::~TestRestRequest()
-{
-
-}
 
 void TestRestRequest::initTestCase()
 {
@@ -61,9 +51,50 @@ void TestRestRequest::cleanupTestCase()
 
 }
 
-void TestRestRequest::test_case1()
+void TestRestRequest::testRequest()
 {
+    bool successEncountered = false;
 
+    auto errorLambda = [](const QString &) {
+        QFAIL("Test should not get error reply! Check internet connectivity.");
+    };
+
+    auto onWeatherInfoLambda = [&successEncountered](const QString &, int, int, int) {
+        successEncountered = true;
+    };
+
+    auto lublinWeatherRequest = QSharedPointer<WeatherByCityNameRequest>::create("Lublin");
+    QObject::connect(lublinWeatherRequest.data(), &WeatherByCityNameRequest::replyError, errorLambda);
+    QObject::connect(lublinWeatherRequest.data(), &WeatherByCityNameRequest::weatherInfo, onWeatherInfoLambda);
+    // send request
+    client.send(lublinWeatherRequest);
+
+    while(successEncountered == false)
+        QTest::qWait(250);
+
+    QVERIFY(successEncountered == true);
+}
+
+void TestRestRequest::testBadRequest()
+{
+    bool errorEncountered = false;
+
+    auto errorLambda = [&errorEncountered](const QString &str) {
+        if (str.contains("Bad Request"))
+            errorEncountered = true;
+        else
+            QFAIL("Test encountered error other than Bad Request! Check internet connectivity.");
+    };
+
+    auto badCityNameWeatheRequest = QSharedPointer<WeatherByCityNameRequest>::create("");
+    QObject::connect(badCityNameWeatheRequest.data(), &WeatherByCityNameRequest::replyError, errorLambda);
+    // send request
+    client.send(badCityNameWeatheRequest);
+
+    while(errorEncountered == false)
+        QTest::qWait(250);
+
+    QVERIFY(errorEncountered == true);
 }
 
 QTEST_MAIN(TestRestRequest)
