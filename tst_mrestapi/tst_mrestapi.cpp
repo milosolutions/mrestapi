@@ -27,7 +27,7 @@ SOFTWARE.
 #include "restapiclient.h"
 #include "weatherbycitynamerequest.h"
 
-class TestRestRequest : public QObject
+class TestMRestAPI : public QObject
 {
     Q_OBJECT
 
@@ -41,17 +41,18 @@ private:
     RestAPIClient client;
 };
 
-void TestRestRequest::initTestCase()
+void TestMRestAPI::initTestCase()
+{
+    QCoreApplication::setApplicationName("MRestAPI Test");
+    QCoreApplication::setOrganizationName("Milo");
+}
+
+void TestMRestAPI::cleanupTestCase()
 {
 
 }
 
-void TestRestRequest::cleanupTestCase()
-{
-
-}
-
-void TestRestRequest::testRequest()
+void TestMRestAPI::testRequest()
 {
     bool successEncountered = false;
 
@@ -75,7 +76,7 @@ void TestRestRequest::testRequest()
     QVERIFY(successEncountered == true);
 }
 
-void TestRestRequest::testBadRequest()
+void TestMRestAPI::testBadRequest()
 {
     bool errorEncountered = false;
 
@@ -97,6 +98,6 @@ void TestRestRequest::testBadRequest()
     QVERIFY(errorEncountered == true);
 }
 
-QTEST_MAIN(TestRestRequest)
+QTEST_MAIN(TestMRestAPI)
 
-#include "tst_restrequest.moc"
+#include "tst_mrestapi.moc"
