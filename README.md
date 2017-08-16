@@ -1,6 +1,6 @@
 [TOC]
  
-Milo Code DB main ([online](https://qtdocs.milosolutions.com/milo-code-db/main/) | [offline](\ref milodatabasemain)) 
+Milo Code DB main ([online](https://docs.milosolutions.com/milo-code-db/main/) | [offline](\ref milodatabasemain)) 
 
 # Description
 
@@ -46,7 +46,7 @@ In example project we can see comunication with two API.
 The first example is based on MrBabuQt project and it not sent any real request - but it is very good part of code.  
 The second example is a simple communication with the weather API.
 
-This project is fully docummented - please check [doxygen docs](https://qtdocs.milosolutions.com/milo-code-db/mrestapi/) or see the comments directly in the source file(s).
+This project is fully docummented - please check [doxygen docs](https://docs.milosolutions.com/milo-code-db/mrestapi/) or see the comments directly in the source file(s).
 
 # License 
 
