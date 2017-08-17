@@ -1,7 +1,7 @@
 Milo Code Database license
 Version 1, August 2016
 
-Copyright (C) 2016 Milo Solutions.
+Copyright (C) 2017 Milo Solutions.
 Everyone is permitted to copy and distribute verbatim copies of this license
 document, but changing it is allowed only to Milo employees.
 

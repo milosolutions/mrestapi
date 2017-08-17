@@ -8,7 +8,7 @@ include(../mrestapi.pri)
 QT += core network
 
 ## Set up application version
-VERSION=0.0.1
+VERSION=1.0
 ## Add version define. You can now use this in C++ code:
 ##  QString someString(APP_VERSION);
 DEFINES+= APP_VERSION=\\\"$$VERSION\\\"

@@ -6,7 +6,7 @@
 DOXYFILE_ENCODING = UTF-8
 
 PROJECT_NAME = MRestAPI
-PROJECT_NUMBER = 0.0.1
+PROJECT_NUMBER = 1.0
 PROJECT_BRIEF = "MRestAPI is a project that shows sample code to communicate via REST API."
 #PROJECT_LOGO = restapi.png
 
