@@ -36,6 +36,7 @@ private slots:
     void cleanupTestCase();
     void testRequest();
     void testBadRequest();
+    void testRetry();
 
 private:
     RestAPIClient client;
@@ -96,6 +97,11 @@ void TestMRestAPI::testBadRequest()
         QTest::qWait(250);
 
     QVERIFY(errorEncountered == true);
+}
+
+void TestMRestAPI::testRetry()
+{
+
 }
 
 QTEST_MAIN(TestMRestAPI)

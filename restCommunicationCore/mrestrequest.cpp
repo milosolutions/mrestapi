@@ -203,6 +203,7 @@ void MRestRequest::send()
  */
 void MRestRequest::retry()
 {
+    qDebug() << "Retry!" << mRequestRetryCounter;
     mActiveReply->abort();
     mActiveReply->deleteLater();
     if (++mRequestRetryCounter > mMaxRequestRetryCount) {
@@ -211,6 +212,7 @@ void MRestRequest::retry()
         if (mActiveReply->bytesAvailable())
             qCInfo(crequest, "Retrying request, %lldB lost.",
                    mActiveReply->bytesAvailable());
+        qDebug() << "Retry: sending again";
         send();
     }
 }
@@ -228,6 +230,7 @@ void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
         mLastError = reply->errorString();
         qCCritical(crequest) << mLastError;
         emit replyError(mLastError);
+        qDebug() << "On reply error";
     }
 }
 
@@ -247,6 +250,7 @@ void MRestRequest::onReadyRead()
  */
 void MRestRequest::onReplyFinished()
 {
+    qDebug() << "On reply finished";
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
     if (reply == nullptr) {
         return;

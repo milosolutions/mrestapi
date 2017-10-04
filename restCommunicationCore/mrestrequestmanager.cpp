@@ -108,6 +108,7 @@ void MRestRequestManager::removeActiveRequest(QObject *sender)
 
     foreach (const MRestRequestPtr &request, mActiveRequests) {
         if (request.data() == sender) {
+            qDebug() << "Removing request" << request.data();
             mActiveRequests.removeOne(request);
             return;
         }
