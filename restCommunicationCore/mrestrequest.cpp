@@ -60,10 +60,9 @@ MRestRequest::MRestRequest(const QUrl& url) :
     mType(Type::None),
     mUrl(url)
 {
-    mRequestTimeout = 5000;
     mRequestTimer = new QTimer(this);
     mRequestTimer->setSingleShot(true);
-    mRequestTimer->setInterval(int(mRequestTimeout));
+    setRequestTimeout(5000);
     connect(mRequestTimer, &QTimer::timeout,
             this, &MRestRequest::retry);
 }
@@ -88,6 +87,10 @@ void MRestRequest::setAddress(const QUrl &url)
 void MRestRequest::setRequestTimeout(const quint32 msec)
 {
     mRequestTimeout = msec;
+
+    if (mRequestTimer) {
+        mRequestTimer->setInterval(int(mRequestTimeout));
+    }
 }
 
 /*!
@@ -226,6 +229,7 @@ void MRestRequest::retry()
     mActiveReply->disconnect(this);
     mActiveReply->abort();
     mActiveReply->deleteLater();
+
     if (mRequestRetryCounter >= mMaxRequestRetryCount) {
         qCCritical(crequest, "Request retry limit reached - operation aborted!");
         emit finished();
@@ -248,7 +252,6 @@ void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
     if (reply != Q_NULLPTR && code != QNetworkReply::NoError) {
         reply->disconnect(this);
-        reply->abort();
         reply->deleteLater();
         mRequestTimer->stop();
         mLastError = reply->errorString();

@@ -110,7 +110,7 @@ void TestMRestAPI::testRetry()
 
     // TODO: use our servers instead of abusing Google.
     auto timeoutRequest = QSharedPointer<TestRequest>::create(QUrl("http://google.com:81"));
-    timeoutRequest->setRequestTimeout(200); // TODO: does not have any effect!
+    timeoutRequest->setRequestTimeout(200);
     const uint limit = 1;
     timeoutRequest->setRetryLimit(limit);
     QObject::connect(timeoutRequest.data(), &TestRequest::finished, finishLambda);
