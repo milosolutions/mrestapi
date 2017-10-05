@@ -63,7 +63,7 @@ MRestRequest::MRestRequest(const QUrl& url) :
     mRequestTimeout = 5000;
     mRequestTimer = new QTimer(this);
     mRequestTimer->setSingleShot(true);
-    mRequestTimer->setInterval(mRequestTimeout);
+    mRequestTimer->setInterval(int(mRequestTimeout));
     connect(mRequestTimer, &QTimer::timeout,
             this, &MRestRequest::retry);
 }
@@ -85,7 +85,7 @@ void MRestRequest::setAddress(const QUrl &url)
  * \brief Sets request timeout.
  * \param milliseconds
  */
-void MRestRequest::setRequestTimeout(quint32 msec)
+void MRestRequest::setRequestTimeout(const quint32 msec)
 {
     mRequestTimeout = msec;
 }
@@ -101,7 +101,7 @@ QUrl MRestRequest::address() const
 /*!
  * Sets request priority to \a priority.
  */
-void MRestRequest::setPriority(MRestRequest::Priority priority)
+void MRestRequest::setPriority(const MRestRequest::Priority priority)
 {
     mPriority = priority;
 }
@@ -153,6 +153,26 @@ QByteArray MRestRequest::rawData() const
 }
 
 /*!
+ * Sets the maximal number of retries to \a retryLimit. MRestRequest is retried
+ * when the previous request reaches a timeout.
+ */
+void MRestRequest::setRetryLimit(const uint retryLimit)
+{
+    mMaxRequestRetryCount = retryLimit;
+}
+
+/*!
+ * Returns number of times this request has been retried.
+ *
+ * \note When request is first sent, this count will return 1. The first "real"
+ * retry will thus return 2.
+ */
+uint MRestRequest::retryCount() const
+{
+    return mRequestRetryCounter;
+}
+
+/*!
  * \brief sends request using method specified in mType (Pup, Post, Get, Delete).
  *
  * If mType is not explicitly set, this function will bail out (with error).
@@ -167,8 +187,9 @@ void MRestRequest::send()
 
     switch (mType) {
     case Type::None:
-        qCDebug(crequest) << "Request type is set to None - can't send. Please"
-                          << "set request type to Put, Post, Get or Delete";
+        qCCritical(crequest) << "Request type is set to None - can't send. Please"
+                             << "set request type to Put, Post, Get or Delete";
+        emit finished();
         return;
     case Type::Put:
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -209,9 +230,11 @@ void MRestRequest::retry()
     if (++mRequestRetryCounter > mMaxRequestRetryCount) {
         qCCritical(crequest, "Request retry limit reached - operation aborted!");
     } else {
-        if (mActiveReply->bytesAvailable())
+        if (mActiveReply->bytesAvailable()) {
             qCInfo(crequest, "Retrying request, %lldB lost.",
                    mActiveReply->bytesAvailable());
+        }
+
         qDebug() << "Retry: sending again";
         send();
     }
@@ -225,12 +248,18 @@ void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
     if (reply != Q_NULLPTR && code != QNetworkReply::NoError) {
-        reply->deleteLater();
-        mRequestTimer->stop();
-        mLastError = reply->errorString();
-        qCCritical(crequest) << mLastError;
-        emit replyError(mLastError);
-        qDebug() << "On reply error";
+        if (code == QNetworkReply::TimeoutError) {
+            qDebug() << "timeout!";
+            retry();
+        } else {
+            reply->deleteLater();
+            mRequestTimer->stop();
+            mLastError = reply->errorString();
+            qCCritical(crequest) << mLastError;
+            emit replyError(mLastError);
+            qDebug() << "On reply error";
+            emit finished();
+        }
     }
 }
 
@@ -251,12 +280,15 @@ void MRestRequest::onReadyRead()
 void MRestRequest::onReplyFinished()
 {
     qDebug() << "On reply finished";
+
+    mRequestTimer->stop();
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
     if (reply == nullptr) {
+        qCCritical(crequest) << "Reply is null";
+        emit finished();
         return;
     }
 
-    mRequestTimer->stop();
     reply->deleteLater();
 
     const QString requestName(metaObject()->className());

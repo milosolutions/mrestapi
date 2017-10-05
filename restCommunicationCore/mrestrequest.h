@@ -36,6 +36,7 @@ class QNetworkAccessManager;
 class MRestRequest : public QObject
 {
     Q_OBJECT
+
 public:
     enum class Type {None, Put, Post, Get, Delete};
     Q_ENUM(Type)
@@ -43,7 +44,7 @@ public:
     explicit MRestRequest(const QUrl& url = QUrl());
     virtual ~MRestRequest();
     void setAddress(const QUrl& url);
-    void setRequestTimeout(quint32 msec = 5000);
+    void setRequestTimeout(const quint32 msec = 5000);
     bool isHigherPriority(const MRestRequest& request);
     void sendWith(QNetworkAccessManager* manager);
     QUrl address() const;
@@ -51,15 +52,16 @@ public:
     QJsonDocument document() const;
     QByteArray rawData() const;
 
+    void setRetryLimit(const uint retryLimit);
+    uint retryCount() const;
+
 signals:
     void finished() const;
     void replyError(const QString &msgs) const;
 
-public slots:
-
 protected:
-    enum class Priority {Bottom, Low, Normal, High, Top};
-    void setPriority(Priority priority);
+    enum class Priority { Bottom, Low, Normal, High, Top };
+    void setPriority(const Priority priority);
 
     void send();
     virtual void retry();
@@ -68,10 +70,10 @@ protected:
     Priority mPriority = Priority::Normal;
     Type mType = Type::Get;
     QUrl mUrl;
-    QNetworkReply *mActiveReply;
-    int mRequestRetryCounter;
-    int mRequestTimeout;
-    int mMaxRequestRetryCount = 3;
+    QNetworkReply *mActiveReply = nullptr;
+    uint mRequestRetryCounter = 0;
+    quint32 mRequestTimeout = 0;
+    uint mMaxRequestRetryCount = 3;
     QByteArray mReplyData;
     QJsonDocument mReplyDocument;
     QJsonDocument mRequestDocument;
@@ -80,8 +82,9 @@ private slots:
     void onReplyError(QNetworkReply::NetworkError code);
     void onReadyRead();
     void onReplyFinished();
+
 private:
     QString mLastError;
-    QTimer *mRequestTimer;
+    QTimer *mRequestTimer = nullptr;
     QNetworkAccessManager *mNetworkManager = nullptr;
 };

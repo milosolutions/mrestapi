@@ -17,8 +17,10 @@ TEMPLATE = app
 SOURCES += \ 
     tst_mrestapi.cpp \
     restapiclient.cpp \
-    weatherbycitynamerequest.cpp
+    weatherbycitynamerequest.cpp \
+    testrequest.cpp
 
 HEADERS += \
     restapiclient.h \
-    weatherbycitynamerequest.h
+    weatherbycitynamerequest.h \
+    testrequest.h
