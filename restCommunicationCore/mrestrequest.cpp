@@ -222,9 +222,9 @@ void MRestRequest::send()
 void MRestRequest::retry()
 {
     ++mRequestRetryCounter;
-    qDebug() << "Retry!" << mRequestRetryCounter;
-    //mActiveReply->abort();
+    qCDebug(crequest) << "Retry" << mRequestRetryCounter;
     mActiveReply->disconnect(this);
+    mActiveReply->abort();
     mActiveReply->deleteLater();
     if (mRequestRetryCounter >= mMaxRequestRetryCount) {
         qCCritical(crequest, "Request retry limit reached - operation aborted!");
@@ -235,7 +235,6 @@ void MRestRequest::retry()
                    mActiveReply->bytesAvailable());
         }
 
-        qDebug() << "Retry: sending again";
         send();
     }
 }
@@ -249,6 +248,7 @@ void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
     if (reply != Q_NULLPTR && code != QNetworkReply::NoError) {
         reply->disconnect(this);
+        reply->abort();
         reply->deleteLater();
         mRequestTimer->stop();
         mLastError = reply->errorString();
@@ -256,7 +256,6 @@ void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
         emit replyError(mLastError);
 
         if (code == QNetworkReply::TimeoutError) {
-            qDebug() << "Timeout!";
             retry();
         } else {
             emit finished();
@@ -280,8 +279,6 @@ void MRestRequest::onReadyRead()
  */
 void MRestRequest::onReplyFinished()
 {
-    qDebug() << "On reply finished";
-
     mRequestTimer->stop();
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
     if (reply == nullptr) {
