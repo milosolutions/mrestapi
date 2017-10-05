@@ -123,7 +123,7 @@ bool MRestRequest::isHigherPriority(const MRestRequest& request)
 void MRestRequest::sendWith(QNetworkAccessManager* manager)
 {
     mNetworkManager = manager;
-    mRequestRetryCounter = 1;
+    mRequestRetryCounter = 0;
     send();
     mReplyData.clear();
 }
@@ -163,9 +163,6 @@ void MRestRequest::setRetryLimit(const uint retryLimit)
 
 /*!
  * Returns number of times this request has been retried.
- *
- * \note When request is first sent, this count will return 1. The first "real"
- * retry will thus return 2.
  */
 uint MRestRequest::retryCount() const
 {
@@ -224,11 +221,14 @@ void MRestRequest::send()
  */
 void MRestRequest::retry()
 {
+    ++mRequestRetryCounter;
     qDebug() << "Retry!" << mRequestRetryCounter;
-    mActiveReply->abort();
+    //mActiveReply->abort();
+    mActiveReply->disconnect(this);
     mActiveReply->deleteLater();
-    if (++mRequestRetryCounter > mMaxRequestRetryCount) {
+    if (mRequestRetryCounter >= mMaxRequestRetryCount) {
         qCCritical(crequest, "Request retry limit reached - operation aborted!");
+        emit finished();
     } else {
         if (mActiveReply->bytesAvailable()) {
             qCInfo(crequest, "Retrying request, %lldB lost.",
@@ -248,16 +248,17 @@ void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
     if (reply != Q_NULLPTR && code != QNetworkReply::NoError) {
+        reply->disconnect(this);
+        reply->deleteLater();
+        mRequestTimer->stop();
+        mLastError = reply->errorString();
+        qCCritical(crequest) << mLastError;
+        emit replyError(mLastError);
+
         if (code == QNetworkReply::TimeoutError) {
-            qDebug() << "timeout!";
+            qDebug() << "Timeout!";
             retry();
         } else {
-            reply->deleteLater();
-            mRequestTimer->stop();
-            mLastError = reply->errorString();
-            qCCritical(crequest) << mLastError;
-            emit replyError(mLastError);
-            qDebug() << "On reply error";
             emit finished();
         }
     }

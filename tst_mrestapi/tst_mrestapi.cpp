@@ -51,54 +51,53 @@ void TestMRestAPI::initTestCase()
 
 void TestMRestAPI::cleanupTestCase()
 {
-
 }
 
 void TestMRestAPI::testRequest()
 {
-//    bool successEncountered = false;
+    bool successEncountered = false;
 
-//    auto errorLambda = [](const QString &) {
-//        QFAIL("Test should not get error reply! Check internet connectivity.");
-//    };
+    auto errorLambda = [](const QString &) {
+        QFAIL("Test should not get error reply! Check internet connectivity.");
+    };
 
-//    auto onWeatherInfoLambda = [&successEncountered](const QString &, int, int, int) {
-//        successEncountered = true;
-//    };
+    auto onWeatherInfoLambda = [&successEncountered](const QString &, int, int, int) {
+        successEncountered = true;
+    };
 
-//    auto lublinWeatherRequest = QSharedPointer<WeatherByCityNameRequest>::create("Lublin");
-//    QObject::connect(lublinWeatherRequest.data(), &WeatherByCityNameRequest::replyError, errorLambda);
-//    QObject::connect(lublinWeatherRequest.data(), &WeatherByCityNameRequest::weatherInfo, onWeatherInfoLambda);
-//    // send request
-//    client.send(lublinWeatherRequest);
+    auto lublinWeatherRequest = QSharedPointer<WeatherByCityNameRequest>::create("Lublin");
+    QObject::connect(lublinWeatherRequest.data(), &WeatherByCityNameRequest::replyError, errorLambda);
+    QObject::connect(lublinWeatherRequest.data(), &WeatherByCityNameRequest::weatherInfo, onWeatherInfoLambda);
+    // send request
+    client.send(lublinWeatherRequest);
 
-//    while(successEncountered == false)
-//        QTest::qWait(250);
+    while(successEncountered == false)
+        QTest::qWait(250);
 
-//    QVERIFY(successEncountered == true);
+    QVERIFY(successEncountered == true);
 }
 
 void TestMRestAPI::testBadRequest()
 {
-//    bool errorEncountered = false;
+    bool errorEncountered = false;
 
-//    auto errorLambda = [&errorEncountered](const QString &str) {
-//        if (!str.contains("Bad Request"))
-//            QFAIL("Test encountered error other than Bad Request! Check internet connectivity.");
+    auto errorLambda = [&errorEncountered](const QString &str) {
+        if (!str.contains("Bad Request"))
+            QFAIL("Test encountered error other than Bad Request! Check internet connectivity.");
 
-//        errorEncountered = true;
-//    };
+        errorEncountered = true;
+    };
 
-//    auto badCityNameWeatheRequest = QSharedPointer<WeatherByCityNameRequest>::create("");
-//    QObject::connect(badCityNameWeatheRequest.data(), &WeatherByCityNameRequest::replyError, errorLambda);
-//    // send request
-//    client.send(badCityNameWeatheRequest);
+    auto badCityNameWeatheRequest = QSharedPointer<WeatherByCityNameRequest>::create("");
+    QObject::connect(badCityNameWeatheRequest.data(), &WeatherByCityNameRequest::replyError, errorLambda);
+    // send request
+    client.send(badCityNameWeatheRequest);
 
-//    while(errorEncountered == false)
-//        QTest::qWait(250);
+    while(errorEncountered == false)
+        QTest::qWait(250);
 
-//    QCOMPARE(errorEncountered, true);
-//    QCOMPARE(badCityNameWeatheRequest->retryCount(), uint(1));
+    QCOMPARE(errorEncountered, true);
+    QCOMPARE(badCityNameWeatheRequest->retryCount(), uint(0));
 }
 
 void TestMRestAPI::testRetry()
@@ -109,15 +108,18 @@ void TestMRestAPI::testRetry()
         finished = true;
     };
 
+    // TODO: use our servers instead of abusing Google.
     auto timeoutRequest = QSharedPointer<TestRequest>::create(QUrl("http://google.com:81"));
-    timeoutRequest->setRequestTimeout(200);
+    timeoutRequest->setRequestTimeout(200); // TODO: does not have any effect!
+    const uint limit = 1;
+    timeoutRequest->setRetryLimit(limit);
     QObject::connect(timeoutRequest.data(), &TestRequest::finished, finishLambda);
     client.send(timeoutRequest);
 
     while(finished == false)
         QTest::qWait(250);
 
-    QCOMPARE(timeoutRequest->retryCount(), uint(3));
+    QCOMPARE(timeoutRequest->retryCount(), limit);
 }
 
 QTEST_MAIN(TestMRestAPI)

@@ -60,7 +60,7 @@ signals:
     void replyError(const QString &msgs) const;
 
 protected:
-    enum class Priority { Bottom, Low, Normal, High, Top };
+    enum class Priority {Bottom, Low, Normal, High, Top};
     void setPriority(const Priority priority);
 
     void send();
