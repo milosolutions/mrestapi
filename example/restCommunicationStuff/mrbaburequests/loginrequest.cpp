@@ -60,9 +60,9 @@ LoginRequest::LoginRequest(const QString &email, const QString &password)
         QJsonObject object;
         object.insert("username", QJsonValue(email));
         object.insert("password", QJsonValue(password));
-        mRequestDocument.setObject(object);
-        mPriority = Priority::High;
-        mType = Type::Post;
+        m_requestDocument.setObject(object);
+        m_priority = Priority::High;
+        m_type = Type::Post;
     } else {
         qCDebug(requestLogin) << "Error: missing login info"
                                  << email << password.length();
@@ -80,7 +80,7 @@ LoginRequest::LoginRequest(const QString &email, const QString &password)
  */
 void LoginRequest::parse()
 {
-    const QJsonObject object(mReplyDocument.object());
+    const QJsonObject object(m_replyDocument.object());
 
     /*
     "non_field_errors": [
@@ -122,7 +122,7 @@ void LoginRequest::parse()
 
     if (token.isEmpty()) {
         qCDebug(requestLogin) << "Error in parsing server reply"
-                              << mReplyDocument.toJson()
+                              << m_replyDocument.toJson()
                               << token;
         emit replyError("Error in parsing server reply");
         return;

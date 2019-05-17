@@ -67,16 +67,16 @@ protected:
     virtual void retry();
     virtual void parse() = 0;
 
-    Priority mPriority = Priority::Normal;
-    Type mType = Type::Get;
-    QUrl mUrl;
-    QNetworkReply *mActiveReply = nullptr;
-    uint mRequestRetryCounter = 0;
-    quint32 mRequestTimeout = 0;
-    uint mMaxRequestRetryCount = 3;
-    QByteArray mReplyData;
-    QJsonDocument mReplyDocument;
-    QJsonDocument mRequestDocument;
+    Priority m_priority = Priority::Normal;
+    Type m_type = Type::Get;
+    QUrl m_url;
+    QNetworkReply *m_activeReply = nullptr;
+    uint m_requestRetryCounter = 0;
+    quint32 m_requestTimeout = 0;
+    uint m_maxRequestRetryCount = 3;
+    QByteArray m_replyData;
+    QJsonDocument m_replyDocument;
+    QJsonDocument m_requestDocument;
 
 private slots:
     void onReplyError(QNetworkReply::NetworkError code);
@@ -84,7 +84,7 @@ private slots:
     void onReplyFinished();
 
 private:
-    QString mLastError;
-    QTimer *mRequestTimer = nullptr;
-    QNetworkAccessManager *mNetworkManager = nullptr;
+    QString m_lastError;
+    QTimer *m_requestTimer = nullptr;
+    QNetworkAccessManager *m_networkManager = nullptr;
 };

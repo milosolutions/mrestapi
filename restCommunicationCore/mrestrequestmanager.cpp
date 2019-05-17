@@ -49,10 +49,10 @@ Q_LOGGING_CATEGORY(rm, "requestManager")
 MRestRequestManager::MRestRequestManager(QObject *parent) :
     QObject(parent)
 {
-    networkManager = new QNetworkAccessManager(this);
-    connect(networkManager, &QNetworkAccessManager::sslErrors,
+    m_networkManager = new QNetworkAccessManager(this);
+    connect(m_networkManager, &QNetworkAccessManager::sslErrors,
             this, &MRestRequestManager::onSslErrors);
-    mIgnoreSslErrors = false;
+    m_ignoreSslErrors = false;
 
 }
 
@@ -66,14 +66,14 @@ MRestRequestManager::MRestRequestManager(QObject *parent) :
  */
 void MRestRequestManager::send(MRestRequestPtr request)
 {
-    if (mActiveRequests.size() < MaxActiveRequestsCount) {
-        mActiveRequests.append(request);
+    if (m_activeRequests.size() < MaxActiveRequestsCount) {
+        m_activeRequests.append(request);
 
-        request->sendWith(networkManager);
+        request->sendWith(m_networkManager);
         QObject::connect(request.data(), &MRestRequest::finished,
                 this, &MRestRequestManager::onRequestFinished);
     } else {
-        pendingRequests.enqueue(request);
+        m_pendingRequests.enqueue(request);
     }
 }
 
@@ -82,7 +82,7 @@ void MRestRequestManager::send(MRestRequestPtr request)
 */
 void MRestRequestManager::ignoreSslErrors()
 {
-    mIgnoreSslErrors = true;
+    m_ignoreSslErrors = true;
 }
 
 /*!
@@ -91,8 +91,8 @@ void MRestRequestManager::ignoreSslErrors()
 void MRestRequestManager::onRequestFinished()
 {
     removeActiveRequest(sender());
-    if (!pendingRequests.isEmpty())
-        send(pendingRequests.dequeue());
+    if (!m_pendingRequests.isEmpty())
+        send(m_pendingRequests.dequeue());
 }
 
 /*!
@@ -106,9 +106,9 @@ void MRestRequestManager::removeActiveRequest(QObject *sender)
         return;
     }
 
-    foreach (const MRestRequestPtr &request, mActiveRequests) {
+    foreach (const MRestRequestPtr &request, m_activeRequests) {
         if (request.data() == sender) {
-            mActiveRequests.removeOne(request);
+            m_activeRequests.removeOne(request);
             return;
         }
     }
@@ -126,18 +126,18 @@ void MRestRequestManager::removeActiveRequest(QObject *sender)
 
 void MRestRequestManager::onSslErrors(QNetworkReply *reply, const QList<QSslError> &errors)
 {
-    if (mIgnoreSslErrors) {
+    if (m_ignoreSslErrors) {
         reply->ignoreSslErrors();
         return;
     }
 
     reply->deleteLater();
-    mLastSslErrors.clear();
+    m_lastSslErrors.clear();
     foreach (QSslError error, errors) {
-        mLastSslErrors << error.errorString();
+        m_lastSslErrors << error.errorString();
     }
 
-    emit sslErrorsChanged(mLastSslErrors);
+    emit sslErrorsChanged(m_lastSslErrors);
 }
 
 /*! @} */

@@ -37,6 +37,7 @@ public:
     Config(const QByteArray& groupName);
     void load();
     void save();
+
 protected:
     class ValuePtr {
     public:
@@ -45,8 +46,9 @@ protected:
         int type = QMetaType::UnknownType;
         void* ptr = nullptr;
     };
-    QHash<QByteArray,ValuePtr> mValues;
+    QHash<QByteArray,ValuePtr> m_values;
+
 private:
-    const QByteArray mGroupName;
+    const QByteArray m_groupName;
     static void copyValue(void *dst, int type, const QVariant& value);
 };

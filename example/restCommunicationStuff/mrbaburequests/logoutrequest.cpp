@@ -42,8 +42,8 @@ SOFTWARE.
  */
 LogoutRequest::LogoutRequest() : MrBabuRequest("login")
 {
-    mPriority = Priority::High;
-    mType = Type::Delete;
+    m_priority = Priority::High;
+    m_type = Type::Delete;
 }
 
 /*!

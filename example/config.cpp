@@ -40,7 +40,7 @@ SOFTWARE.
  */
 
 Config::Config(const QByteArray& groupName) :
-    mGroupName(groupName)
+    m_groupName(groupName)
 {
     //Nothing
 }
@@ -51,10 +51,10 @@ Config::Config(const QByteArray& groupName) :
 void Config::load()
 {
     QSettings settings;
-    settings.beginGroup(mGroupName);
-    foreach (const QByteArray& key, mValues.keys()) {
-        copyValue(mValues.value(key).ptr,
-                  mValues.value(key).type,
+    settings.beginGroup(m_groupName);
+    foreach (const QByteArray& key, m_values.keys()) {
+        copyValue(m_values.value(key).ptr,
+                  m_values.value(key).type,
                   settings.value(key));
     }
 }
@@ -65,10 +65,10 @@ void Config::load()
 void Config::save()
 {
     QSettings settings;
-    settings.beginGroup(mGroupName);
-    foreach (const QByteArray& key, mValues.keys()) {
-        QVariant value(mValues.value(key).type,
-                       mValues.value(key).ptr);
+    settings.beginGroup(m_groupName);
+    foreach (const QByteArray& key, m_values.keys()) {
+        QVariant value(m_values.value(key).type,
+                       m_values.value(key).ptr);
         settings.setValue(key, value);
     }
 }

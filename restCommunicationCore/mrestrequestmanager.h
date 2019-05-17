@@ -41,17 +41,21 @@ public:
     MRestRequestManager(QObject *parent = nullptr);
     void send(MRestRequestPtr request);
     void ignoreSslErrors();
+
 signals:
     void sslErrorsChanged(const QStringList &errors);
+
 protected:
     void onRequestFinished();
     void removeActiveRequest(QObject *sender);
-    MRestRequestQueue pendingRequests;
-    QVector<MRestRequestPtr> mActiveRequests;
-    QStringList mLastSslErrors;
-    bool mIgnoreSslErrors;
-    QNetworkAccessManager *networkManager = nullptr;
-    int MaxActiveRequestsCount = 3;
+
+    MRestRequestQueue m_pendingRequests;
+    QVector<MRestRequestPtr> m_activeRequests;
+    QStringList m_lastSslErrors;
+    bool m_ignoreSslErrors;
+    QNetworkAccessManager *m_networkManager = nullptr;
+    const int MaxActiveRequestsCount = 3;
+
 private slots:
     void onSslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
 };

@@ -66,9 +66,9 @@ UserInfoRequest::UserInfoRequest(const QByteArray& token)
             {"email", QJsonValue("")}
         };
 
-        mRequestDocument.setObject(object);
-        mPriority = Priority::Normal;
-        mType = Type::Post;
+        m_requestDocument.setObject(object);
+        m_priority = Priority::Normal;
+        m_type = Type::Post;
     } else {
         qCDebug(requestUserInfo) << "Error: missing user token" << token;
     }
@@ -79,7 +79,7 @@ UserInfoRequest::UserInfoRequest(const QByteArray& token)
  */
 void UserInfoRequest::parse()
 {
-    const QJsonObject object(mReplyDocument.object());
+    const QJsonObject object(m_replyDocument.object());
 
     const QString firstName(object.value("first_name").toString());
     const QString lastName(object.value("last_name").toString());
@@ -88,7 +88,7 @@ void UserInfoRequest::parse()
     const QString email(object.value("email").toString());
 
     if (firstName.isEmpty() && lastName.isEmpty()) {
-        qCDebug(requestUserInfo) << mReplyDocument.toJson();
+        qCDebug(requestUserInfo) << m_replyDocument.toJson();
     }
 
     qCDebug(requestUserInfo).noquote() << "Received user info:"

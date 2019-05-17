@@ -54,8 +54,8 @@ Q_LOGGING_CATEGORY(requestWeahterCityByName, "request.weahterCityByName")
 WeatherByCityNameRequest::WeatherByCityNameRequest(const QString &cityName)
     : OpenWeatherMapRequest("weather?q=" + cityName + "&units=metric")
 {
-    mPriority = Priority::High;
-    mType = Type::Get;
+    m_priority = Priority::High;
+    m_type = Type::Get;
 }
 
 /*!
@@ -63,7 +63,7 @@ WeatherByCityNameRequest::WeatherByCityNameRequest(const QString &cityName)
  */
 void WeatherByCityNameRequest::parse()
 {
-    const QJsonObject object(mReplyDocument.object());
+    const QJsonObject object(m_replyDocument.object());
 
     /*
      * {"cod":"404","message":"Error: Not found city"}
