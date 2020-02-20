@@ -5,17 +5,17 @@ DEFINES *= QT_USE_QSTRINGBUILDER
 OTHER_FILES += $$PWD/README.md $$PWD/AUTHORS.md $$PWD/mrestapi.doxyfile
 
 HEADERS += \
-    $$PWD/restCommunicationCore/mrestrequest.h \
-    $$PWD/restCommunicationCore/mrestrequestqueue.h \
-    $$PWD/restCommunicationCore/mrestrequestmanager.h \
-    $$PWD/restCommunicationCore/mrestrequestptr.h 
+    $$PWD/mrestrequest.h \
+    $$PWD/mrestrequestqueue.h \
+    $$PWD/mrestrequestmanager.h \
+    $$PWD/mrestrequestptr.h
 
 SOURCES += \
-    $$PWD/restCommunicationCore/mrestrequest.cpp \
-    $$PWD/restCommunicationCore/mrestrequestqueue.cpp \
-    $$PWD/restCommunicationCore/mrestrequestmanager.cpp 
+    $$PWD/mrestrequest.cpp \
+    $$PWD/mrestrequestqueue.cpp \
+    $$PWD/mrestrequestmanager.cpp
 
-INCLUDEPATH += $$PWD/restCommunicationCore/
+INCLUDEPATH += $$PWD
 #DISTFILES += \
 #    $$PWD/AUTHORS.md
 
