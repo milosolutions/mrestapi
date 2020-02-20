@@ -14,7 +14,6 @@ set(SOURCES mrestrequest.h
   mrestrequest.cpp
   mrestrequestqueue.cpp
   mrestrequestmanager.cpp
-  mrestrequestptr.cpp
 )
 
 set(OTHER_FILES README.md AUTHORS.md mrestapi.doxyfile)
