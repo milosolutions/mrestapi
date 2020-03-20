@@ -1,3 +1,8 @@
+if (POLICY CMP0048)
+    cmake_policy(SET CMP0048 NEW)
+endif ()
+
+cmake_minimum_required(VERSION 3.5)
 
 project(mrestapi
   VERSION 0.0.1
@@ -36,5 +41,6 @@ target_link_libraries(mrestapi
   Qt5::Network
 )
 
-message("MRestApi: missing unit test!")
-#add_subdirectory(tst_mrestapi)
+enable_testing()
+add_subdirectory(tst_mrestapi)
+add_test(NAME MRestApiTest COMMAND mrestapi_test)

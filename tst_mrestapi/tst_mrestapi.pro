@@ -24,3 +24,4 @@ HEADERS += \
     restapiclient.h \
     weatherbycitynamerequest.h \
     testrequest.h
+

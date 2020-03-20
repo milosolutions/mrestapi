@@ -2,8 +2,8 @@
 
 TestRequest::TestRequest(const QUrl &url) : MRestRequest(url)
 {
-    mType = MRestRequest::Type::Get;
-    mPriority = Priority::High;
+    m_type = MRestRequest::Type::Get;
+    m_priority = Priority::High;
 }
 
 // Intentionally empty
