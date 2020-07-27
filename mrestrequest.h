@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (C) 2017 Milo Solutions
+Copyright (C) 2020 Milo Solutions
 Contact: https://www.milosolutions.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -50,14 +50,24 @@ public:
     QUrl address() const;
     QString lastError() const;
     QJsonDocument document() const;
+    void setDocument(const QJsonDocument &document);
     QByteArray rawData() const;
 
     void setRetryLimit(const uint retryLimit);
     uint retryCount() const;
 
+    Type type() const;
+
+    void setQuiet(const bool isQuiet);
+    bool isQuiet() const;
+
+    QByteArray token() const;
+    void setToken(const QByteArray &token);
+
 signals:
     void finished() const;
-    void replyError(const QString &msgs) const;
+    void replyError(const QString &msgs,
+                    const QNetworkReply::NetworkError errorCode = QNetworkReply::UnknownServerError) const;
 
 protected:
     enum class Priority {Bottom, Low, Normal, High, Top};
@@ -65,11 +75,20 @@ protected:
 
     void send();
     virtual void retry();
+    virtual void customizeRequest(QNetworkRequest &request);
+    virtual bool isMultiPart() const;
+    virtual QByteArray requestData() const;
+    virtual QHttpMultiPart* requestMultiPart() const;
     virtual void parse() = 0;
+    virtual void readReplyData(const QString &requestName,
+                               const QString &status);
+    virtual bool isTokenRequired() const;
 
+    bool mQuiet = false;
     Priority m_priority = Priority::Normal;
     Type m_type = Type::Get;
     QUrl m_url;
+    QByteArray m_token;
     QNetworkReply *m_activeReply = nullptr;
     uint m_requestRetryCounter = 0;
     quint32 m_requestTimeout = 0;

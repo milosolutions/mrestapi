@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (C) 2017 Milo Solutions
+Copyright (C) 2020 Milo Solutions
 Contact: https://www.milosolutions.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -172,6 +172,36 @@ uint MRestRequest::retryCount() const
     return m_requestRetryCounter;
 }
 
+MRestRequest::Type MRestRequest::type() const
+{
+    return m_qype;
+}
+
+void MRestRequest::setQuiet(const bool isQuiet)
+{
+    m_quiet = isQuiet;
+}
+
+bool MRestRequest::isQuiet() const
+{
+    return m_quiet;
+}
+
+QByteArray MRestRequest::token() const
+{
+    return m_token;
+}
+
+void MRestRequest::setToken(const QByteArray &token)
+{
+    m_token = token;
+}
+
+void MRestRequest::setDocument(const QJsonDocument &document)
+{
+    m_requestDocument = document;
+}
+
 /*!
  * \brief sends request using method specified in mType (Pup, Post, Get, Delete).
  *
@@ -180,10 +210,15 @@ uint MRestRequest::retryCount() const
 void MRestRequest::send()
 {
     Q_ASSERT(m_networkManager);
-    qCInfo(crequest) << m_type << m_url.toDisplayString() << m_requestRetryCounter;
+    if (mQuiet == false) {
+    qCInfo(crequest) << m_type << m_url.toDisplayString()
+                     << m_requestRetryCounter
+                     << m_requestDocument;
+    }
     m_replyData.clear();
     QNetworkRequest request(m_url);
     request.setOriginatingObject(this);
+    customizeRequest(request);
 
     switch (m_type) {
     case Type::None:
@@ -192,15 +227,27 @@ void MRestRequest::send()
         emit finished();
         return;
     case Type::Put:
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        m_activeReply = m_networkManager->put(request, m_requestDocument.toJson());
+        if (isMultiPart()) {
+            auto device = requestMultiPart();
+            m_activeReply = m_networkManager->put(request, device);
+            device->setParent(mActiveReply);
+        } else {
+            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+            m_activeReply = m_networkManager->put(request, requestData());
+        }
         break;
     case Type::Get:
         m_activeReply = m_networkManager->get(request);
         break;
     case Type::Post:
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-        m_activeReply = m_networkManager->post(request, m_requestDocument.toJson());
+        if (isMultiPart()) {
+            auto device = requestMultiPart();
+            m_activeReply = m_networkManager->post(request, device);
+            device->setParent(mActiveReply);
+        } else {
+            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+            m_activeReply = m_networkManager->post(request, requestData());
+        }
         break;
     case Type::Delete:
         m_activeReply = m_networkManager->deleteResource(request);
@@ -214,9 +261,59 @@ void MRestRequest::send()
             m_requestTimer, static_cast<void(QTimer::*)()>(&QTimer::start));
     connect(m_activeReply, &QNetworkReply::readyRead,
             this, &MRestRequest::onReadyRead);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+    connect(m_activeReply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::errorOccurred),
+            this, &MRestRequest::onReplyError);
+#else
     connect(m_activeReply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
             this, &MRestRequest::onReplyError);
+#endif
     m_requestTimer->start();
+}
+
+void MRestRequest::customizeRequest(QNetworkRequest &request)
+{
+    Q_ASSERT_X(!isTokenRequired() || !mToken.isEmpty(),
+               objectName().toLatin1(),
+               "This request require token and it's not provided!");
+
+    if (!m_token.isEmpty()) {
+        request.setRawHeader(QByteArray("Authorization"), QStringLiteral("%1 %2").arg(Tags::bearerHeader, m_token).toLatin1());
+    }
+}
+
+bool MRestRequest::isMultiPart() const
+{
+    return false;
+}
+
+QByteArray MRestRequest::requestData() const
+{
+    return m_requestDocument.toJson(QJsonDocument::JsonFormat::Compact);
+}
+
+QHttpMultiPart *MRestRequest::requestMultiPart() const
+{
+    qDebug() << "Reimplement me!";
+    return nullptr;
+}
+
+void MRestRequest::readReplyData(const QString &requestName,
+                                 const QString &status)
+{
+    QJsonParseError parseError;
+    // rawData can still be parsed in another formats
+    mReplyDocument = QJsonDocument::fromJson(m_replyData, &parseError);
+    if (parseError.error != QJsonParseError::NoError) {
+        qCWarning(crequest) << requestName << status
+                            << "Error while parsing json document:"
+                            << parseError.errorString();
+    } else {
+        if (mQuiet == false) {
+            qCDebug(crequest) << requestName << status
+                              << "Request reply is a valid JSON";
+        }
+    }
 }
 
 /*!
@@ -232,6 +329,8 @@ void MRestRequest::retry()
 
     if (m_requestRetryCounter >= m_maxRequestRetryCount) {
         qCCritical(crequest, "Request retry limit reached - operation aborted!");
+
+        emit replyError(m_lastError, QNetworkReply::NetworkError::TimeoutError);
         emit finished();
     } else {
         if (m_activeReply->bytesAvailable()) {
@@ -255,12 +354,17 @@ void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
         reply->deleteLater();
         m_requestTimer->stop();
         m_lastError = reply->errorString();
-        qCCritical(crequest) << m_lastError;
-        emit replyError(m_lastError);
+
+        const QString requestName(metaObject()->className());
+        const QString status(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
+                             .toString());
+        qCWarning(crequest) << requestName << status << "Error:" << m_lastError;
+        qCWarning(crequest).noquote() << rawData();
 
         if (code == QNetworkReply::TimeoutError) {
             retry();
         } else {
+            emit replyError(mLastError, code);
             emit finished();
         }
     }
@@ -293,35 +397,13 @@ void MRestRequest::onReplyFinished()
     reply->deleteLater();
 
     const QString requestName(metaObject()->className());
-    QJsonParseError parseError;
-
     const QString status(reply->attribute(QNetworkRequest::HttpStatusCodeAttribute)
                          .toString());
 
-    if (m_replyData.isEmpty()) {
+    if (!m_replyData.isEmpty()) {
+        readReplyData(requestName, status);
+    } else {
         qCDebug(crequest) << requestName << status << "Request reply is empty";
-        emit finished();
-        return;
-    }
-
-    // rawData can still be parsed in another formats
-    m_replyDocument = QJsonDocument::fromJson(m_replyData, &parseError);
-    if (parseError.error != QJsonParseError::NoError) {
-        qCWarning(crequest) << requestName << status
-                            << "Error while parsing json document:"
-                            << parseError.errorString();
-
-       emit finished();
-       return;
-    }
-
-    qCDebug(crequest) << requestName << "request response received";
-
-    if (m_replyDocument.isNull()) {
-        m_lastError = "JSON document is invalid";
-        qCDebug(crequest) << requestName << m_lastError;
-        emit finished(); // rawData can still be parsed in another formats
-        return;
     }
 
     //parse json document according to specific request reply format
