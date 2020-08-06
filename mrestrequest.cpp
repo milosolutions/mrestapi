@@ -273,7 +273,7 @@ void MRestRequest::send()
 
 void MRestRequest::customizeRequest(QNetworkRequest &request)
 {
-    Q_ASSERT_X(!isTokenRequired() || !mToken.isEmpty(),
+    Q_ASSERT_X(!isTokenRequired() || !m_token.isEmpty(),
                objectName().toLatin1(),
                "This request require token and it's not provided!");
 
@@ -349,7 +349,7 @@ void MRestRequest::retry()
 void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(QObject::sender());
-    if (reply != Q_NULLPTR && code != QNetworkReply::NoError) {
+    if (reply != nullptr && code != QNetworkReply::NoError) {
         reply->disconnect(this);
         reply->deleteLater();
         m_requestTimer->stop();
@@ -364,7 +364,7 @@ void MRestRequest::onReplyError(QNetworkReply::NetworkError code)
         if (code == QNetworkReply::TimeoutError) {
             retry();
         } else {
-            emit replyError(mLastError, code);
+            emit replyError(m_lastError, code);
             emit finished();
         }
     }
@@ -409,6 +409,12 @@ void MRestRequest::onReplyFinished()
     //parse json document according to specific request reply format
     parse();
     emit finished();
+}
+
+bool MRestRequest::isTokenRequired() const
+{
+    return (m_type != Type::None &&
+            m_type != Type::Get);
 }
 
 /*!

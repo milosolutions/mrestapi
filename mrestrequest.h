@@ -84,7 +84,7 @@ protected:
                                const QString &status);
     virtual bool isTokenRequired() const;
 
-    bool mQuiet = false;
+    bool m_quiet = false;
     Priority m_priority = Priority::Normal;
     Type m_type = Type::Get;
     QUrl m_url;
