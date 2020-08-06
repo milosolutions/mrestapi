@@ -28,6 +28,7 @@ SOFTWARE.
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <QHttpMultiPart>
 #include <QJsonParseError>
 #include <QDebug>
 #include <QLoggingCategory>
@@ -174,7 +175,7 @@ uint MRestRequest::retryCount() const
 
 MRestRequest::Type MRestRequest::type() const
 {
-    return m_qype;
+    return m_type;
 }
 
 void MRestRequest::setQuiet(const bool isQuiet)
@@ -210,7 +211,7 @@ void MRestRequest::setDocument(const QJsonDocument &document)
 void MRestRequest::send()
 {
     Q_ASSERT(m_networkManager);
-    if (mQuiet == false) {
+    if (m_quiet == false) {
     qCInfo(crequest) << m_type << m_url.toDisplayString()
                      << m_requestRetryCounter
                      << m_requestDocument;
@@ -230,7 +231,7 @@ void MRestRequest::send()
         if (isMultiPart()) {
             auto device = requestMultiPart();
             m_activeReply = m_networkManager->put(request, device);
-            device->setParent(mActiveReply);
+            device->setParent(m_activeReply);
         } else {
             request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
             m_activeReply = m_networkManager->put(request, requestData());
@@ -243,7 +244,7 @@ void MRestRequest::send()
         if (isMultiPart()) {
             auto device = requestMultiPart();
             m_activeReply = m_networkManager->post(request, device);
-            device->setParent(mActiveReply);
+            device->setParent(m_activeReply);
         } else {
             request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
             m_activeReply = m_networkManager->post(request, requestData());
@@ -278,7 +279,8 @@ void MRestRequest::customizeRequest(QNetworkRequest &request)
                "This request require token and it's not provided!");
 
     if (!m_token.isEmpty()) {
-        request.setRawHeader(QByteArray("Authorization"), QStringLiteral("%1 %2").arg(Tags::bearerHeader, m_token).toLatin1());
+        request.setRawHeader(QByteArray("Authorization"),
+                             QStringLiteral("%1 %2").arg("Bearer", m_token).toLatin1());
     }
 }
 
@@ -303,13 +305,13 @@ void MRestRequest::readReplyData(const QString &requestName,
 {
     QJsonParseError parseError;
     // rawData can still be parsed in another formats
-    mReplyDocument = QJsonDocument::fromJson(m_replyData, &parseError);
+    m_replyDocument = QJsonDocument::fromJson(m_replyData, &parseError);
     if (parseError.error != QJsonParseError::NoError) {
         qCWarning(crequest) << requestName << status
                             << "Error while parsing json document:"
                             << parseError.errorString();
     } else {
-        if (mQuiet == false) {
+        if (m_quiet == false) {
             qCDebug(crequest) << requestName << status
                               << "Request reply is a valid JSON";
         }
@@ -415,6 +417,23 @@ bool MRestRequest::isTokenRequired() const
 {
     return (m_type != Type::None &&
             m_type != Type::Get);
+}
+
+void MRestRequest::parse()
+{
+    if (m_elapsedTimer.isValid()) {
+        qCDebug(crequest) << "Request (" << objectName()
+                          << ") finished. Elapsed time:"
+                          << m_elapsedTimer.elapsed();
+    }
+
+    emit requestFinished(m_replyDocument);
+}
+
+
+void MRestRequest::setQuery(const QUrlQuery &query)
+{
+    m_url.setQuery(query);
 }
 
 /*!

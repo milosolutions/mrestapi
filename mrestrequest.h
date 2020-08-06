@@ -27,6 +27,7 @@ SOFTWARE.
 #include <QObject>
 #include <QUrl>
 #include <QJsonDocument>
+#include <QElapsedTimer>
 #include <QNetworkReply>
 
 class QTimer;
@@ -65,6 +66,7 @@ public:
     void setToken(const QByteArray &token);
 
 signals:
+    void requestFinished(const QJsonDocument &doc) const;
     void finished() const;
     void replyError(const QString &msgs,
                     const QNetworkReply::NetworkError errorCode = QNetworkReply::UnknownServerError) const;
@@ -74,6 +76,7 @@ protected:
     void setPriority(const Priority priority);
 
     void send();
+    void setQuery(const QUrlQuery &query);
     virtual void retry();
     virtual void customizeRequest(QNetworkRequest &request);
     virtual bool isMultiPart() const;
@@ -96,6 +99,7 @@ protected:
     QByteArray m_replyData;
     QJsonDocument m_replyDocument;
     QJsonDocument m_requestDocument;
+    QElapsedTimer m_elapsedTimer;
 
 private slots:
     void onReplyError(QNetworkReply::NetworkError code);
