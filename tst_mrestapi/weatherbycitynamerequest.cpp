@@ -51,7 +51,7 @@ void WeatherByCityNameRequest::parse()
      */
 
     const QString cod{"cod"};
-    const QString  errorCode{"404"};
+    const QString errorCode{"404"};
 
     if (object.contains(cod) && object.value(cod).toString() == errorCode) {
         const QString errorMsgKey("message");
