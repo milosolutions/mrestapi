@@ -12,18 +12,25 @@ project(mrestapi
 
 find_package(Qt5 COMPONENTS REQUIRED Core Network)
 
-set(SOURCES mrestrequest.h
-  mrestrequestqueue.h
-  mrestrequestmanager.h
+set(CMAKE_AUTOMOC ON)
+
+set(SOURCES
+  mrestrequest.h
   mrestrequestptr.h
   mrestrequest.cpp
+  mrestrequestqueue.h
   mrestrequestqueue.cpp
+  mrestrequestmanager.h
   mrestrequestmanager.cpp
+  mimagerequest.h
+  mimagerequest.cpp
+  mmultipartrequest.h
+  mmultipartrequest.cpp
 )
 
 set(OTHER_FILES README.md AUTHORS.md mrestapi.doxyfile)
 
-add_library(mrestapi OBJECT ${SOURCES} ${OTHER_FILES})
+add_library(mrestapi STATIC ${SOURCES} ${OTHER_FILES})
 
 option (production-server "MRestApi: Use production server" OFF)
 if (production-server)
@@ -32,7 +39,6 @@ endif ()
 
 target_include_directories(mrestapi
   PUBLIC
-  $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
@@ -41,6 +47,5 @@ target_link_libraries(mrestapi
   Qt5::Network
 )
 
-enable_testing()
 add_subdirectory(tst_mrestapi)
-add_test(NAME MRestApiTest COMMAND mrestapi_test)
+#add_subdirectory(example)

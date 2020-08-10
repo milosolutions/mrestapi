@@ -1,35 +1,33 @@
-#include "multipartrequest.h"
-
-#include "common/logs.h"
+#include "mmultipartrequest.h"
 
 #include <QDebug>
 
 #include <QHttpMultiPart>
 #include <QHttpPart>
 
-MultiPartRequest::MultiPartRequest(const QString &path, const Type &type, const QString &token)
-    : BaseRequest(path, type, token)
+MMultiPartRequest::MMultiPartRequest(const QUrl& url)
+    : MRestRequest(url)
 {
 }
 
-void MultiPartRequest::addPart(const QString &key, const QString &value)
+void MMultiPartRequest::addPart(const QString &key, const QString &value)
 {
     qDebug() << "Adding part" << key << value;
     m_stringParts.insert(key, value);
 }
 
-void MultiPartRequest::addPart(const QString &key, const QFileInfo &file)
+void MMultiPartRequest::addPart(const QString &key, const QFileInfo &file)
 {
     qDebug() << "Adding part" << key << file.fileName();
     m_fileParts.insert(key, file);
 }
 
-bool MultiPartRequest::isMultiPart() const
+bool MMultiPartRequest::isMultiPart() const
 {
     return true;
 }
 
-QHttpMultiPart* MultiPartRequest::requestMultiPart() const
+QHttpMultiPart* MMultiPartRequest::requestMultiPart() const
 {
     // Adapted from:
     // https://stackoverflow.com/questions/38179706/uploading-a-file-in-multipart-form-data-in-qt5
@@ -59,7 +57,7 @@ QHttpMultiPart* MultiPartRequest::requestMultiPart() const
             auto file = new QFile(value.absoluteFilePath());
             file->setParent(multiPart);
             if (file->open(QIODevice::ReadOnly) == false) {
-                qWarning() << RED("Could not open cached file!")
+                qWarning() << "Could not open cached file!"
                            << key << value;
             }
 

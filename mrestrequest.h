@@ -57,6 +57,7 @@ public:
     void setRetryLimit(const uint retryLimit);
     uint retryCount() const;
 
+    void setType(const Type type);
     Type type() const;
 
     void setQuiet(const bool isQuiet);

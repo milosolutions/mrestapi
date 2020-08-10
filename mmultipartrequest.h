@@ -1,19 +1,17 @@
 #pragma once
 
-#include "rest/baserequest.h"
+#include "mrestrequest.h"
 
 #include <QObject>
 #include <QFileInfo>
 #include <QMultiHash>
 
-class MultiPartRequest : public BaseRequest
+class MMultiPartRequest : public MRestRequest
 {
     Q_OBJECT
 
 public:
-    explicit MultiPartRequest(const QString &path,
-                              const Type &type,
-                              const QString &token = QString());
+    explicit MMultiPartRequest(const QUrl &url);
 
     void addPart(const QString &key, const QString &value);
     void addPart(const QString &key, const QFileInfo &file);

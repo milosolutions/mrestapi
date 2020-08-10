@@ -8,12 +8,16 @@ HEADERS += \
     $$PWD/mrestrequest.h \
     $$PWD/mrestrequestqueue.h \
     $$PWD/mrestrequestmanager.h \
-    $$PWD/mrestrequestptr.h
+    $$PWD/mrestrequestptr.h \
+    $$PWD/mmultipartrequest.h \
+    $$PWD/mimagerequest.h
 
 SOURCES += \
     $$PWD/mrestrequest.cpp \
     $$PWD/mrestrequestqueue.cpp \
-    $$PWD/mrestrequestmanager.cpp
+    $$PWD/mrestrequestmanager.cpp \
+    $$PWD/mmultipartrequest.cpp \
+    $$PWD/mimagerequest.cpp
 
 INCLUDEPATH += $$PWD
 #DISTFILES += \

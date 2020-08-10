@@ -1,24 +1,12 @@
-#include "imagerequest.h"
-
-#include "common/globals.h"
-#include "common/logs.h"
+#include "mimagerequest.h"
 
 #include <QFile>
 #include <QFileInfo>
 
-ImageRequest::ImageRequest(const QString &filePath, const QString &cachePath)
-    : BaseRequest(filePath, BaseRequest::Type::Get, QString()),
-      mCachePath(cachePath)
+ImageRequest::ImageRequest(const QUrl& url, const QString &cachePath)
+    : MRestRequest(url),
+      m_cachePath(cachePath)
 {
-    setPath(filePath);
-}
-
-void ImageRequest::setPath(const QString &path)
-{
-    Q_ASSERT_X(!path.isEmpty(), __PRETTY_FUNCTION__, "Path address not provided!");
-
-    mPath = path;
-    mUrl.setUrl(SERVER_ADDRESS + mPath);
 }
 
 bool ImageRequest::isTokenRequired() const
@@ -28,25 +16,24 @@ bool ImageRequest::isTokenRequired() const
 
 void ImageRequest::parse()
 {
-    if (mElapsedTimer.isValid()) {
-        qCDebug(sessionRequest) << "Request (" << objectName()
-                                << ") finished. Elapsed time:"
-                                << mElapsedTimer.elapsed();
+    if (m_elapsedTimer.isValid()) {
+        qDebug() << "Request (" << objectName()
+                 << ") finished. Elapsed time:"
+                 << m_elapsedTimer.elapsed();
     }
 
-    emit requestFinished(mReplyDocument);
+    emit requestFinished(m_replyDocument);
 }
 
 void ImageRequest::readReplyData(const QString &requestName, const QString &status)
 {
-    QFile file(mCachePath + "/" + QFileInfo(mPath).fileName());
+    QFile file(m_cachePath + "/" + QFileInfo(m_url.path()).fileName());
     if (file.open(QFile::WriteOnly) == false) {
-        qDebug() << RED("Could not open file for writing") << file.fileName()
+        qDebug() << "Could not open file for writing" << file.fileName()
                  << requestName << status;
         return;
     }
 
-    qDebug() << "Writing file" << file.fileName()
-             << mPath;
-    file.write(mReplyData);
+    qDebug() << "Writing file" << file.fileName();
+    file.write(m_replyData);
 }

@@ -173,6 +173,11 @@ uint MRestRequest::retryCount() const
     return m_requestRetryCounter;
 }
 
+void MRestRequest::setType(const MRestRequest::Type type)
+{
+    m_type = type;
+}
+
 MRestRequest::Type MRestRequest::type() const
 {
     return m_type;
