@@ -285,7 +285,7 @@ void MRestRequest::customizeRequest(QNetworkRequest &request)
 
     if (!m_token.isEmpty()) {
         request.setRawHeader(QByteArray("Authorization"),
-                             QStringLiteral("%1 %2").arg("Bearer", m_token).toLatin1());
+                             QStringLiteral("%1 %2").arg("Bearer", QString::fromLatin1(m_token)).toLatin1());
     }
 }
 
